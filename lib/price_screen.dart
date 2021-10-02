@@ -1,7 +1,9 @@
+import 'dart:io' show Platform;
+
 import 'package:bitcoin_ticker/coin_data.dart';
+import 'package:bitcoin_ticker/crypto_currency.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'dart:io' show Platform;
 
 class PriceScreen extends StatefulWidget {
   @override
@@ -9,7 +11,19 @@ class PriceScreen extends StatefulWidget {
 }
 
 class _PriceScreenState extends State<PriceScreen> {
-  String selectedCurrency = 'USD';
+  String selectedCurrency;
+
+  List<CryptoCurrency> cryptoCurrencies = [
+    CryptoCurrency(currency: 'BTC'),
+    CryptoCurrency(currency: 'ETH'),
+    CryptoCurrency(currency: 'LTC'),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    selectedCurrency = currenciesList.first;
+  }
 
   CupertinoPicker makeCupertinoPicker() {
     List<Text> items = [];
@@ -27,7 +41,9 @@ class _PriceScreenState extends State<PriceScreen> {
       backgroundColor: Colors.lightBlue,
       itemExtent: 32.0,
       onSelectedItemChanged: (selectedIndex) {
-        selectedCurrency = currenciesList[selectedIndex];
+        setState(() {
+          selectedCurrency = currenciesList[selectedIndex];
+        });
       },
       children: items,
     );
@@ -69,6 +85,22 @@ class _PriceScreenState extends State<PriceScreen> {
     }
   }
 
+  List<Widget> makeCryptoCurrencies() {
+    List<Widget> results = [];
+    for (int i = 0; i < cryptoCurrencies.length; i++) {
+      results.add(
+        _CryptoCurrency(
+          cryptoCurrency: cryptoCurrencies[i],
+          fiatCurrency: selectedCurrency,
+        ),
+      );
+      if (i < cryptoCurrencies.length - 1) {
+        results.add(const SizedBox(height: 32.0));
+      }
+    }
+    return results;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -81,23 +113,9 @@ class _PriceScreenState extends State<PriceScreen> {
         children: <Widget>[
           Padding(
             padding: EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
-            child: Card(
-              color: Colors.lightBlueAccent,
-              elevation: 5.0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
-                child: Text(
-                  '1 BTC = ? USD',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 20.0,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: makeCryptoCurrencies(),
             ),
           ),
           Container(
@@ -108,6 +126,39 @@ class _PriceScreenState extends State<PriceScreen> {
             child: makeCurrencyPickerWidget(),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _CryptoCurrency extends StatelessWidget {
+  final CryptoCurrency cryptoCurrency;
+  final String fiatCurrency;
+
+  _CryptoCurrency({
+    @required this.cryptoCurrency,
+    @required this.fiatCurrency,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    cryptoCurrency.getExchangeRate(fiatCurrency: fiatCurrency);
+    return Card(
+      color: Colors.lightBlueAccent,
+      elevation: 5.0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
+        child: Text(
+          '1 ${cryptoCurrency.currency} = ${cryptoCurrency.rate.toInt() ?? '?'} $fiatCurrency',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 20.0,
+            color: Colors.white,
+          ),
+        ),
       ),
     );
   }
