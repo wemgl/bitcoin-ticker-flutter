@@ -7,9 +7,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData.dark().copyWith(
-          primaryColor: Colors.lightBlue,
-          scaffoldBackgroundColor: Colors.white),
+      theme: ThemeData.light().copyWith(
+        colorScheme: ColorScheme.light(
+          primary: Colors.lightBlue,
+        ),
+        scaffoldBackgroundColor: Colors.white,
+      ),
       home: PriceScreen(),
     );
   }
