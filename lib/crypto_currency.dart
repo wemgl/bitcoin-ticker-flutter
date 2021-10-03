@@ -1,4 +1,4 @@
-import 'open_api_client.dart';
+import 'coin_api_client.dart';
 
 class CryptoCurrency {
   final String currency;
@@ -8,7 +8,7 @@ class CryptoCurrency {
 
   Future<void> getExchangeRate({String fiatCurrency}) async {
     final openAPIClient =
-        OpenAPIClient(cryptoCurrency: currency, fiatCurrency: fiatCurrency);
+        CoinAPIClient(cryptoCurrency: currency, fiatCurrency: fiatCurrency);
     _rate = await openAPIClient.getExchangeRate();
   }
 

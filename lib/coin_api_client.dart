@@ -5,11 +5,11 @@ import 'package:http/http.dart' as http;
 const kAPIKey = '<CHECK EMAIL>';
 const kBaseURL = 'https://rest.coinapi.io/v1/exchangerate';
 
-class OpenAPIClient {
+class CoinAPIClient {
   String cryptoCurrency;
   String fiatCurrency;
 
-  OpenAPIClient({this.cryptoCurrency, this.fiatCurrency});
+  CoinAPIClient({this.cryptoCurrency, this.fiatCurrency});
 
   Future<double> getExchangeRate() async {
     final url = Uri.parse('$kBaseURL/$cryptoCurrency/$fiatCurrency');
